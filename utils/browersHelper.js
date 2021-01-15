@@ -27,18 +27,24 @@ function shouldSetBrowsers(isInteractive){
     }
     const question={
         type:'confirm',
-        name:'shouldSetBrowers',
+        name:'shouldSetBrowsers',
         message:chalk.yellow("We're unable to detect target browers.")+
         `\n\nWould you like to add the defaults to you ${chalk.bold(
             'package.json'
         )}`,
         initial:true
     }
-    return prompts(question).then(answer=>answer.shouldSetBrowsers)
+    return prompts(question).then(answer=>{
+        return  answer.shouldSetBrowsers  
+    }) 
 }
 
-function checkBrowers(dir,isInteractive,retry=true){
+function checkBrowsers(dir,isInteractive,retry=true){
+    console.log(dir)
     const current=browserslist.loadConfig({path:dir});
+    console.log(current)
+ 
+     
     if(current!=null){
         return Promise.resolve(current);
     }
@@ -56,17 +62,19 @@ function checkBrowers(dir,isInteractive,retry=true){
     }
     
     return shouldSetBrowsers(isInteractive).then(shouldSetBrowsers=>{
+     
         if(!shouldSetBrowsers){
             return checkBrowsers(dir, isInteractive, false);
         }
 
         return (
             pkgUp({cwd:dir})
-                .then(filePath=>{
+                .then(filePath=>{ 
                     if(filePath==null){
                         return Promise.reject();
                     }
                     const pkg=JSON.parse(fs.readFileSync(filePath));
+                  
                     pkg['browerslist']=defaultBrowers;
                     fs.writeFileSync(filePath,JSON.stringify(pkg,null,2)+os.EOL);
 
@@ -83,4 +91,4 @@ function checkBrowers(dir,isInteractive,retry=true){
     })
 }
 
-module.exports={defaultBrowers,checkBrowers};
+module.exports={defaultBrowers,checkBrowsers};

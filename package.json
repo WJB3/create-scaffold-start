@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "env": "cross-env node scripts/start.js"
+    "start": "cross-env node scripts/start.js"
   },
   "keywords": [],
   "author": "",
@@ -14,14 +14,29 @@
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "babel-loader": "^8.2.2",
+    "browserslist": "^4.16.1",
     "cross-env": "^7.0.3",
     "optimize-css-assets-webpack-plugin": "^5.0.4",
+    "pkg-up": "^3.1.0",
     "postcss-safe-parser": "^5.0.2",
+    "prompts": "^2.4.0",
     "webpack": "^5.12.3",
     "webpack-cli": "^4.3.1"
   },
   "main": "postcss.config.js",
   "dependencies": {
     "dotenv": "^8.2.0"
+  },
+  "browerslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
