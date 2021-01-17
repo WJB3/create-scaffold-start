@@ -40,10 +40,8 @@ function shouldSetBrowsers(isInteractive){
 }
 
 function checkBrowsers(dir,isInteractive,retry=true){
-    console.log(dir)
-    const current=browserslist.loadConfig({path:dir});
-    console.log(current)
  
+    const current=browserslist.loadConfig({path:dir}); 
      
     if(current!=null){
         return Promise.resolve(current);
@@ -75,12 +73,12 @@ function checkBrowsers(dir,isInteractive,retry=true){
                     }
                     const pkg=JSON.parse(fs.readFileSync(filePath));
                   
-                    pkg['browerslist']=defaultBrowers;
+                    pkg['browserslist']=defaultBrowers;
                     fs.writeFileSync(filePath,JSON.stringify(pkg,null,2)+os.EOL);
 
                     browserslist.clearCaches(); 
                     console.log(
-                        `${chalk.gree("Set target browers:")} ${chalk.cyan(
+                        `${chalk.gree("Set target browsers:")} ${chalk.cyan(
                             defaultBrowers.join(",")
                         )}`
                     )

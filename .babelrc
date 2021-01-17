@@ -1,5 +1,7 @@
 {
     "presets": [
-      ["@babel/env"]
+      ["@babel/env"],
+      //解析jsx语法
+      "@babel/preset-react"
     ]
   }

@@ -39,10 +39,13 @@ module.exports={
     customizeenv: resolveApp('.env'),
     appBuild: resolveApp('build'),
     appSrc: resolveApp('src'),
+    appPublic: resolveApp('public'),
     appHtml: resolveApp('public/index.html'),
+    yarnLockFile: resolveApp('yarn.lock'),
     appIndexJs:resolveModule(resolveApp,'src/index'),
-    appTsConfig: resolveApp('tsconfig.json'),
+    appTsConfig: resolveApp('tsconfig'),
     appNodeModules:resolveModule(resolveApp,'node_modules'),
+    appPackageJson:resolveModule(resolveApp,'package'),
     publicUrlOrPath
 }
 

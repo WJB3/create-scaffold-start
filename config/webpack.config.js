@@ -1,13 +1,13 @@
 'use strict';
 
-const paths = require("./paths");
-const modules = require("./modules");
+const paths = require('./paths');
+const modules = require('./modules');
+const fs=require('fs');
 
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const safePostCssParser = require('postcss-safe-parser');
-const { webpack } = require("webpack");
+const HtmlWebpackPlugin = require('html-webpack-plugin'); 
+const webpack= require('webpack');
 
 const imageInlineSizeLimit = parseInt(
     process.env.IMAGE_INLINE_SIZE_LIMIT || '10000'
@@ -44,9 +44,9 @@ module.exports = function (webpackEnv) {
                 loader: require.resolve("css-loader"),
                 options: cssOptions
             },
-            {
-                loader: require.resolve("postcss-loader")
-            }
+            // {
+            //     loader: require.resolve("postcss-loader")
+            // }
         ].filter(Boolean);
         if (preProcessor) {
             loaders.push(
@@ -69,12 +69,12 @@ module.exports = function (webpackEnv) {
     }
 
     return {
-        mode: isEnvProduction ? "production" : isEnvDevelopment && 'development',
+        mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
         devtool: isEnvProduction
             ? shouldUseSourceMap
                 ? 'cheap-module-source-map'
                 : false
-            : isEnvDevelopment && "cheap-module-eval-source-map",
+            : isEnvDevelopment && 'eval-cheap-module-source-map',
         entry:
             isEnvDevelopment && !shouldUseReactRefresh ?
                 [
@@ -86,39 +86,12 @@ module.exports = function (webpackEnv) {
             pathinfo: isEnvDevelopment,
             filename: isEnvProduction
                 ? 'static/js/[name].[contenthash:8].js'
-                : isEnvDevelopment && 'static/js/bundle.js',
+                : isEnvDevelopment && 'static/js/[name].chunk.bundle.js',
             chunkFilename: isEnvProduction
                 ? 'static/js/[name].[contenthash:8].chunk.js'
                 : isEnvDevelopment && 'static/js/[name].chunk.js',
             publicPath: paths.publicUrlOrPath,
             globalObject: 'this',
-        },
-        optimization: {
-            minimize: isEnvProduction,
-            minimizer: [
-                //仅在生产模式中使用
-                new TerserPlugin({
-
-                }),
-                new OptimizeCSSAssetsPlugin({
-                    cssProcessorOptions: {
-                        parser: safePostCssParser,
-                        map: shouldUseSourceMap
-                            ? {
-                                inline: false,
-                                annotation: true
-                            }
-                            : false
-                    },
-                    cssProcessorPluginOptions: {
-                        preset: ['default', { minifyFontValues: { removeQuotes: false } }],
-                    },
-                })
-            ],
-            splitChunks: {
-                chunks: "all",
-                name: false
-            }
         },
         resolve: {
             modules: ['node_modules', paths.appNodeModules].concat(
@@ -167,11 +140,8 @@ module.exports = function (webpackEnv) {
                             test: /\.(js|mjs|jsx|ts|tsx)$/,
                             include: paths.appSrc,
                             exclude: /node_modules/,
-                            options: {
-                                cacheDirectory: true,
-                                cacheCompression: false,
-                                compact: isEnvProduction
-                            }
+                            loader: require.resolve('babel-loader'),
+                            options:{}
                         },
                         {
                             test: cssRegex,
@@ -193,8 +163,8 @@ module.exports = function (webpackEnv) {
                                 sourceMap: isEnvProduction
                                     ? shouldUseSourceMap
                                     : isEnvDevelopment,
+                                modules: true
                             }),
-                            modules: true
                         },
                         {
                             test: sassRegex,

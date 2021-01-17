@@ -61,9 +61,12 @@ function getDirectoryOfProcessById(processId) {
 
 function getProcessForPort(port) {
     try {
+        //查看占用端口号的程序pid
         var processId = getProcessIdOnPort(port);
+        //查看占用端口号的程序目录
         var directory = getDirectoryOfProcessById(processId);
-        var command = getProcessCommand(processId, directory);
+        //查看占用端口好的目录命令地址
+        var command = getProcessCommand(processId, directory); 
         return (
           chalk.cyan(command) +
           chalk.grey(' (pid ' + processId + ')\n') +
