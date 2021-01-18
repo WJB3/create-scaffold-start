@@ -51,6 +51,8 @@ module.exports = function (webpackEnv) {
         return loaders;
     }
 
+    console.log("webpack.config.js")
+
     return {
         mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
         devtool: isEnvProduction
@@ -73,7 +75,7 @@ module.exports = function (webpackEnv) {
             chunkFilename: isEnvProduction
                 ? 'static/js/[name].[contenthash:8].chunk.js'
                 : isEnvDevelopment && 'static/js/[name].chunk.js',
-            publicPath: paths.publicUrlOrPath,
+            publicPath: paths.publicUrlOrPathFunc(),
             globalObject: 'this',
         },
         resolve: {

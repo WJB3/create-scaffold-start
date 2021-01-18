@@ -3,6 +3,5 @@
       ["@babel/env"],
       //解析jsx语法
       "@babel/preset-react"
-    ],
-    "plugins": ["react-hot-loader/babel"]
+    ]
   }

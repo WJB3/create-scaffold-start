@@ -9,18 +9,17 @@ process.on('unhandledRejection', err => {
 });
 
 require('../config/env');
- 
 
 const isInteractive = process.stdout.isTTY;
 
 const path = require('path');
-const paths = require('../config/paths');
 const chalk = require('chalk');
 const webpack = require('webpack');
+const configFactory = require('../config/webpack.config'); 
+const config = configFactory('production');
+const paths = require('../config/paths');
 const fs = require('fs-extra');
 const FileSizeReporter = require('../utils/FileSizeReporter');
-const configFactory = require('../config/webpack.config');
-const formatWebpackMessages = require('../utils/formatWebpackMessages');
 
 
 const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
@@ -30,9 +29,8 @@ const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild;
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 
-const config = configFactory('production');
 
-console.log(config)
+
 
 const { checkBrowsers } = require('../utils/browersHelper');
 checkBrowsers(paths.appPath, isInteractive)

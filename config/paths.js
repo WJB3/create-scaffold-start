@@ -2,6 +2,7 @@
 const path=require("path");
 const fs=require("fs");
 const getPublicUrlOrPath=require("../utils/getPublicUrlOrPath");
+console.log('path')
 
 
 const moduleFileExtensions=[
@@ -22,6 +23,11 @@ const publicUrlOrPath=getPublicUrlOrPath(
     process.env.PUBLIC_URL
 )
 
+const publicUrlOrPathFunc=()=>getPublicUrlOrPath(
+    process.env.NODE_ENV==='development',
+    require(resolveApp("package.json")).homepage,
+    process.env.PUBLIC_URL
+)
 
 const resolveModule=(resolveFn,filePath)=>{
     const extension=moduleFileExtensions.find(extension=>
@@ -47,7 +53,8 @@ module.exports={
     appTsConfig: resolveModule(resolveApp,'tsconfig'),
     appIndexJs:resolveModule(resolveApp,'src/index'), 
     appPackageJson:resolveModule(resolveApp,'package'),
-    publicUrlOrPath
+    publicUrlOrPath,
+    publicUrlOrPathFunc
 }
 
 module.exports.moduleFileExtensions = moduleFileExtensions;

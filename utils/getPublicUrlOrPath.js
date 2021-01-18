@@ -5,7 +5,8 @@ const { URL } =require('url');
 module.exports = getPublicUrlOrPath;
 
 function getPublicUrlOrPath(isEnvDevelopment,homepage,envPublicUrl){
-
+    console.log("getPublicUrlOrPath")
+    console.log(envPublicUrl);
     const stubDomain="https://www.baidu.com"; 
     if(envPublicUrl){
         //为了确保envPublicUrl最后以/结尾
