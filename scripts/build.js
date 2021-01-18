@@ -9,6 +9,7 @@ process.on('unhandledRejection', err => {
 });
 
 require('../config/env');
+ 
 
 const isInteractive = process.stdout.isTTY;
 
@@ -19,6 +20,7 @@ const webpack = require('webpack');
 const fs = require('fs-extra');
 const FileSizeReporter = require('../utils/FileSizeReporter');
 const configFactory = require('../config/webpack.config');
+const formatWebpackMessages = require('../utils/formatWebpackMessages');
 
 
 const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
@@ -30,6 +32,7 @@ const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 
 const config = configFactory('production');
 
+console.log(config)
 
 const { checkBrowsers } = require('../utils/browersHelper');
 checkBrowsers(paths.appPath, isInteractive)
@@ -37,7 +40,7 @@ checkBrowsers(paths.appPath, isInteractive)
         return measureFileSizesBeforeBuild(paths.appBuild);
     })
     .then(previousFileSizes => {
-        
+
         fs.emptyDirSync(paths.appBuild);
         // Merge with the public folder
         copyPublicFolder();
@@ -45,38 +48,55 @@ checkBrowsers(paths.appPath, isInteractive)
         return build(previousFileSizes);
     })
     .then(
-        ({stats,previousFileSizes,warnings})=>{
-            
+        ({ stats, previousFileSizes, warnings }) => {
+            if (warnings.length) {
+
+            } else {
+                console.log(chalk.green('Compiled successfully.\n'));
+            }
+            console.log('File sizes after gzip:\n');
+            printFileSizesAfterBuild(
+                stats,
+                previousFileSizes,
+                paths.appBuild,
+                WARN_AFTER_BUNDLE_GZIP_SIZE,
+                WARN_AFTER_CHUNK_GZIP_SIZE
+            );
+            console.log();
         }
-    
+
+
     )
-    .catch(err=>{
-        if(err && err.message){
-            console.log(err.message)
-        }
+    .catch(err => {
+        console.log(err)
+     
         process.exit(1);
     })
 
-function build(previousFileSizes){
-    console.log('Creating an optimized production build...');
- 
-    const compiler=webpack(config); 
+function build(previousFileSizes) {
+    console.log('Creating an optimized production build...'); 
 
-    compiler.hooks.failed.tap('failed', err => {
- 
-        console.log(chalk.red('Failed to compile.\n'));
-        console.log(err);
-        console.log('\n');
-        process.exit(1);
-    });
-    
-  
-    return new Promise((resolve,reject)=>{
-        compiler.run((err,stats)=>{
+    const compiler = webpack(config);
+
+    return new Promise((resolve, reject) => {
+        compiler.run((err, stats) => {
+            let statusData = stats.toJson({ all: false, warnings: true, errors: true });
           
-            console.log(err)
-            console.log(stats)
-         
+            if (statusData.errors.length) {
+                if (statusData.errors.length > 1) {
+                    statusData.errors.length = 1;
+                } 
+                return reject(statusData.errors[0]);
+            }
+
+            const resolveArgs = {
+                stats,
+                previousFileSizes,
+                warnings: statusData.warnings,
+            };
+
+            return resolve(resolveArgs);
+
         })
     })
 }

@@ -42,30 +42,12 @@ module.exports = function (webpackEnv) {
                     : {}
             },
             {
-                loader: require.resolve("css-loader"),
+                loader: require.resolve('css-loader'),
                 options: cssOptions
             },
-            // {
-            //     loader: require.resolve("postcss-loader")
-            // }
+          
         ].filter(Boolean);
-        if (preProcessor) {
-            loaders.push(
-                {
-                    loader: require.resolve('resolve-url-loader'),
-                    options: {
-                        sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
-                        root: paths.appSrc,
-                    },
-                },
-                {
-                    loader: require.resolve(preProcessor),
-                    options: {
-                        sourceMap: true,
-                    },
-                }
-            );
-        }
+         
         return loaders;
     }
 
@@ -153,7 +135,7 @@ module.exports = function (webpackEnv) {
                             use: getStyleLoaders({
                                 //表示当css-loader处理index.scss文件读取到@import语句的时候， 
                                 //因为将importLoaders设置为1，那么a.scss和b.scss会被postcss-loader给处理
-                                importLoaders: 1,
+                                importLoaders: 0,
                                 sourceMap: isEnvProduction
                                     ? shouldUseSourceMap
                                     : isEnvDevelopment
@@ -222,6 +204,13 @@ module.exports = function (webpackEnv) {
                 )
             ),
             isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
+            isEnvProduction &&
+                new MiniCssExtractPlugin({
+                // Options similar to the same options in webpackOptions.output
+                // both options are optional
+                filename: 'static/css/[name].[contenthash:8].css',
+                chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+                }),
         ].filter(Boolean),
         node: {
             global: false,

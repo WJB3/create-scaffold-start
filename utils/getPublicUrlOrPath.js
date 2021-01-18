@@ -6,8 +6,7 @@ module.exports = getPublicUrlOrPath;
 
 function getPublicUrlOrPath(isEnvDevelopment,homepage,envPublicUrl){
 
-    const stubDomain="https://www.baidu.com";
-
+    const stubDomain="https://www.baidu.com"; 
     if(envPublicUrl){
         //为了确保envPublicUrl最后以/结尾
         envPublicUrl=envPublicUrl.endsWith('/')
