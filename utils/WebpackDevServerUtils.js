@@ -17,7 +17,7 @@ const prompts = require('prompts');
 const clearConsole = require('./clearConsole'); 
 const getProcessForPort = require('./getProcessForPort');
 const typescriptFormatter = require('./typescriptFormatter');
-const forkTsCheckerWebpackPlugin = require('./ForkTsCheckerWebpackPlugin');
+const forkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const isInteractive = process.stdout.isTTY;
 
@@ -76,6 +76,8 @@ function prepareUrls(protocol, host, port, pathname = '/') {
 }
 
 function printInstructions(appName, urls, useYarn) {
+  console.log("printInstructions")
+
   console.log();
   console.log(`You can now view ${chalk.bold(appName)} in the browser.`);
   console.log();
@@ -153,30 +155,7 @@ function createCompiler({
   let isFirstCompile = true;
   let tsMessagesPromise;
   let tsMessagesResolver;
-
-  if (useTypeScript) {
-    compiler.hooks.beforeCompile.tap('beforeCompile', () => {
-      tsMessagesPromise = new Promise(resolve => {
-        tsMessagesResolver = msgs => resolve(msgs);
-      });
-    });
-
-    forkTsCheckerWebpackPlugin
-      .getCompilerHooks(compiler)
-      .receive.tap('afterTypeScriptCheck', (diagnostics, lints) => {
-        const allMsgs = [...diagnostics, ...lints];
-        const format = message =>
-          `${message.file}\n${typescriptFormatter(message, true)}`;
-
-        tsMessagesResolver({
-          errors: allMsgs.filter(msg => msg.severity === 'error').map(format),
-          warnings: allMsgs
-            .filter(msg => msg.severity === 'warning')
-            .map(format),
-        });
-      });
-  }
-
+ 
   // "done" event fires when webpack has finished recompiling the bundle.
   // Whether or not you have warnings or errors, you will get this event.
   compiler.hooks.done.tap('done', async stats => {
@@ -237,23 +216,7 @@ function createCompiler({
 
   // You can safely remove this after ejecting.
   // We only use this block for testing of Create React App itself:
-  const isSmokeTest = process.argv.some(
-    arg => arg.indexOf('--smoke-test') > -1
-  );
-  if (isSmokeTest) {
-    compiler.hooks.failed.tap('smokeTest', async () => {
-      await tsMessagesPromise;
-      process.exit(1);
-    });
-    compiler.hooks.done.tap('smokeTest', async stats => {
-      await tsMessagesPromise;
-      if (stats.hasErrors() || stats.hasWarnings()) {
-        process.exit(1);
-      } else {
-        process.exit(0);
-      }
-    });
-  }
+ 
 
   return compiler;
 }
@@ -377,7 +340,7 @@ function prepareProxy(proxy, appPublicFolder, servedPathname) {
     target = resolveLoopback(proxy);
   } else {
     target = proxy;
-  }
+  } 
   return [
     {
       target,

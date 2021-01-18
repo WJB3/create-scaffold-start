@@ -11,8 +11,9 @@ const moduleFileExtensions=[
     'jsx',
     'json'
 ]
-
+//fs.realpathSync 返回已解析的路径名 process.cwd会返回Node.js进程的当前工作目录
 const appDirectory = fs.realpathSync(process.cwd());
+//path.resolve() 方法会将路径或路径片段的序列解析为绝对路径。
 const resolveApp=relativePath=>path.resolve(appDirectory,relativePath);
 
 const publicUrlOrPath=getPublicUrlOrPath(
@@ -42,9 +43,9 @@ module.exports={
     appPublic: resolveApp('public'),
     appHtml: resolveApp('public/index.html'),
     yarnLockFile: resolveApp('yarn.lock'),
-    appIndexJs:resolveModule(resolveApp,'src/index'),
-    appTsConfig: resolveApp('tsconfig'),
-    appNodeModules:resolveModule(resolveApp,'node_modules'),
+    appNodeModules:resolveApp('node_modules'),
+    appTsConfig: resolveModule(resolveApp,'tsconfig'),
+    appIndexJs:resolveModule(resolveApp,'src/index'), 
     appPackageJson:resolveModule(resolveApp,'package'),
     publicUrlOrPath
 }

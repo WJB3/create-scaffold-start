@@ -5,7 +5,7 @@ process.env.NODE_ENV='development';
 
 const paths=require('../config/paths');
 const fs=require('fs');
-const chalk=require("chalk");
+const chalk=require('chalk');
 const webpack=require('webpack');
 const { checkBrowsers }=require('../utils/browersHelper');
 const { choosePort,prepareUrls,createCompiler,prepareProxy } = require('../utils/WebpackDevServerUtils');
@@ -16,7 +16,11 @@ const openBrowser = require('../utils/openBrowser');
 const configFactory=require('../config/webpack.config');
 const useYarn = fs.existsSync(paths.yarnLockFile);
 
-require("../config/env");
+process.on('unhandledRejection', err => {
+    throw err;
+});
+
+require('../config/env');
 
 //该项目现在是否有运行终端
 const isInteractive=process.stdout.isTTY;
@@ -50,7 +54,8 @@ checkBrowsers(paths.appPath,isInteractive)
               devServer.sockWrite(devServer.sockets, 'warnings', warnings),
             errors: errors =>
               devServer.sockWrite(devServer.sockets, 'errors', errors),
-        };
+        }; 
+        console.log(config)
         const compiler=createCompiler({
             appName,
             config,
@@ -66,7 +71,7 @@ checkBrowsers(paths.appPath,isInteractive)
             proxySetting,
             paths.appPublic,
             paths.publicUrlOrPath
-        );
+        ); 
         //编译器在web服务器上生成webpack资产
         const serverConfig=createDevServerConfig(
             proxyConfig,

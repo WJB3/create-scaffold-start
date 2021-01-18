@@ -8,6 +8,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin'); 
 const webpack= require('webpack');
+const MiniCssExtractPlugin=require('mini-css-extract-plugin');
 
 const imageInlineSizeLimit = parseInt(
     process.env.IMAGE_INLINE_SIZE_LIMIT || '10000'
@@ -77,7 +78,7 @@ module.exports = function (webpackEnv) {
             : isEnvDevelopment && 'eval-cheap-module-source-map',
         entry:
             isEnvDevelopment && !shouldUseReactRefresh ?
-                [
+                [  
                     paths.appIndexJs
                 ]
                 : paths.appIndexJs,
@@ -112,36 +113,39 @@ module.exports = function (webpackEnv) {
                 {
                     //one of将遍历以下所有加载器，直到其中一个加载器匹配要求
                     oneOf: [
-                        {
-                            test: [/\.avif$/],
-                            type: 'asset',
-                            parser: {
-                                dataUrlCondition: {
-                                    maxSize: imageInlineSizeLimit // 10kb
-                                }
-                            },
-                            generator: {
-                                filename: 'static/[hash][ext][query].[ext]'
-                            }
-                        },
-                        {
-                            test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-                            type: "asset",
-                            parser: {
-                                dataUrlCondition: {
-                                    maxSize: imageInlineSizeLimit
-                                }
-                            },
-                            generator: {
-                                filename: 'static/[hash][ext][query].[ext]'
-                            }
-                        },
+                        // {
+                        //     test: [/\.avif$/],
+                        //     type: 'asset',
+                        //     parser: {
+                        //         dataUrlCondition: {
+                        //             maxSize: imageInlineSizeLimit // 10kb
+                        //         }
+                        //     },
+                        //     generator: {
+                        //         filename: 'static/[hash][ext][query].[ext]'
+                        //     }
+                        // },
+                        // {
+                        //     test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+                        //     type: "asset",
+                        //     parser: {
+                        //         dataUrlCondition: {
+                        //             maxSize: imageInlineSizeLimit
+                        //         }
+                        //     },
+                        //     generator: {
+                        //         filename: 'static/[hash][ext][query].[ext]'
+                        //     }
+                        // },
                         {
                             test: /\.(js|mjs|jsx|ts|tsx)$/,
                             include: paths.appSrc,
                             exclude: /node_modules/,
-                            loader: require.resolve('babel-loader'),
-                            options:{}
+                            use: [  
+                                {
+                                  loader: 'babel-loader', 
+                                },  
+                              ]
                         },
                         {
                             test: cssRegex,
@@ -218,12 +222,13 @@ module.exports = function (webpackEnv) {
                 )
             ),
             isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
-        ],
+        ].filter(Boolean),
         node: {
             global: false,
             __filename: false,
             __dirname: false,
         },
-        performance:false
+        performance:false,
+        //target:isEnvDevelopment && 'web'
     }
 }
